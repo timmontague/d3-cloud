@@ -20,7 +20,6 @@ module.exports = function() {
       fontSize = cloudFontSize,
       fontStyle = cloudFontNormal,
       fontWeight = cloudFontNormal,
-      rotate = cloudRotate,
       padding = cloudPadding,
       spiral = archimedeanSpiral,
       words = [],
@@ -28,6 +27,7 @@ module.exports = function() {
       event = dispatch("word", "end"),
       timer = null,
       random = Math.random,
+      rotate = () => (~~(random() * 6) - 3) * 30,
       cloud = {},
       canvas = cloudCanvas;
 
@@ -47,7 +47,7 @@ module.exports = function() {
           d.font = font.call(this, d, i);
           d.style = fontStyle.call(this, d, i);
           d.weight = fontWeight.call(this, d, i);
-          d.rotate = rotate.call(this, d, i, random);
+          d.rotate = rotate.call(this, d, i);
           d.size = ~~fontSize.call(this, d, i);
           d.padding = padding.call(this, d, i);
           return d;
@@ -226,10 +226,6 @@ function cloudFontNormal() {
 
 function cloudFontSize(d) {
   return Math.sqrt(d.value);
-}
-
-function cloudRotate(d, i, random) {
-  return (~~(random() * 6) - 3) * 30;
 }
 
 function cloudPadding() {
