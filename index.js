@@ -137,15 +137,21 @@ module.exports = function() {
               w = tag.width >> 5,
               sw = size[0] >> 5,
               lx = tag.x - (w << 4),
-              sx = lx & 0x7f,
+              sx = lx & 0x1f,
               msx = 32 - sx,
               h = tag.y1 - tag.y0,
               x = (tag.y + tag.y0) * sw + (lx >> 5),
               last;
           for (var j = 0; j < h; j++) {
             last = 0;
-            for (var i = 0; i <= w; i++) {
-              board[x + i] |= (last << msx) | (i < w ? (last = sprite[j * w + i]) >>> sx : 0);
+            if (sx === 0) {
+              for (var i = 0; i < w; i++) {
+                board[x0 + i] |= sprite[j * w + i];
+              }
+            } else {
+              for (var i = 0; i <= w; i++) {
+                board[x0 + i] |= (last << msx) | (i < w ? (last = sprite[j * w + i]) >>> sx : 0);
+              }
             }
             x += sw;
           }
@@ -329,16 +335,22 @@ function cloudCollide(tag, board, sw) {
   var sprite = tag.sprite,
       w = tag.width >> 5,
       lx = tag.x - (w << 4),
-      sx = lx & 0x7f,
+      sx = lx & 0x1f,
       msx = 32 - sx,
       h = tag.y1 - tag.y0,
       x = (tag.y + tag.y0) * sw + (lx >> 5),
       last;
   for (var j = 0; j < h; j++) {
     last = 0;
-    for (var i = 0; i <= w; i++) {
-      if (((last << msx) | (i < w ? (last = sprite[j * w + i]) >>> sx : 0))
+    if (sx === 0) {
+      for (var i = 0; i < w; i++) {
+        if ((sprite[j * w + i] & board[x + i])) return true;
+      }
+    } else {
+      for (var i = 0; i <= w; i++) {
+        if (((last << msx) | (i < w ? (last = sprite[j * w + i]) >>> sx : 0))
           & board[x + i]) return true;
+      }
     }
     x += sw;
   }
